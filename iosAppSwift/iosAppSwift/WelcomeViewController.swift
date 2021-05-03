@@ -40,7 +40,7 @@ class WelcomeViewController: UIViewController, LocalVideoListener {
         dismiss(animated: true, completion: nil)
     }
     
-    func onError(description_ description: String?) {
+    func onError(description: String?) {
         NSLog("Local video error: \(String(describing: description))")
     }
 

@@ -1,9 +1,11 @@
-package com.shepeliev.webrtckmm.sample.shared
+package com.shepeliev.webrtckmp.sample.shared
 
+import com.shepeliev.webrtckmp.sample.shared.Log
 import com.shepeliev.webrtckmp.MediaDevices
 import com.shepeliev.webrtckmp.MediaStream
 import com.shepeliev.webrtckmp.VideoTrack
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 interface LocalVideoListener {
@@ -12,7 +14,7 @@ interface LocalVideoListener {
     fun onError(description: String?)
 }
 
-class UserMediaSample(private val listener: LocalVideoListener) : CoroutineScope by CommonMainScope() {
+class UserMediaSample(private val listener: LocalVideoListener) : CoroutineScope by MainScope() {
 
     private val tag = "UserMediaSample"
     private var mediaStream: MediaStream? = null

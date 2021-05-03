@@ -8,13 +8,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.material.button.MaterialButton
-import com.shepeliev.webrtckmm.sample.shared.UserMediaSample
-import com.shepeliev.webrtckmm.sample.shared.LocalVideoListener
+import com.shepeliev.webrtckmp.sample.shared.UserMediaSample
+import com.shepeliev.webrtckmp.sample.shared.LocalVideoListener
 import com.shepeliev.webrtckmp.VideoTrack
 import com.shepeliev.webrtckmp.android.EglBaseProvider
 import org.webrtc.SurfaceViewRenderer
 
-class UserMediaSampleActivity : AppCompatActivity(R.layout.activity_user_media_sample), LocalVideoListener {
+class UserMediaSampleActivity : AppCompatActivity(R.layout.activity_user_media_sample),
+    LocalVideoListener {
 
     private val tag = "UserMediaSampleActivity"
 

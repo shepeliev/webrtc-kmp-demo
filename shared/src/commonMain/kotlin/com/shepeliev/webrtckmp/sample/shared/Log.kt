@@ -1,4 +1,4 @@
-package com.shepeliev.webrtckmm.sample.shared
+package com.shepeliev.webrtckmp.sample.shared
 
 expect object Log {
     fun i(tag: String, msg: String, throwable: Throwable? = null)

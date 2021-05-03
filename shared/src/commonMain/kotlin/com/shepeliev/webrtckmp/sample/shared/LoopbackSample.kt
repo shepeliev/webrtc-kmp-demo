@@ -1,7 +1,6 @@
 package com.shepeliev.webrtckmp.sample.shared
 
-import com.shepeliev.webrtckmm.sample.shared.CommonMainScope
-import com.shepeliev.webrtckmm.sample.shared.Log
+import com.shepeliev.webrtckmp.sample.shared.Log
 import com.shepeliev.webrtckmp.IceCandidate
 import com.shepeliev.webrtckmp.IceConnectionState
 import com.shepeliev.webrtckmp.MediaDevices
@@ -15,6 +14,7 @@ import com.shepeliev.webrtckmp.VideoTrack
 import com.shepeliev.webrtckmp.create
 import com.shepeliev.webrtckmp.mediaConstraints
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -28,7 +28,7 @@ interface LoopbackSampleListener {
 }
 
 class LoopbackSample(private val listener: LoopbackSampleListener) :
-    CoroutineScope by CommonMainScope() {
+    CoroutineScope by MainScope() {
 
     private val tag = "LoopbackSample"
 

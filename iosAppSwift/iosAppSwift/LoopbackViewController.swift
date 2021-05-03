@@ -50,7 +50,7 @@ class LoopbackViewController: UIViewController, LoopbackSampleListener {
         callState = .inCall
     }
     
-    func onError(description: String) {
+    func onError(description_ description: String) {
         NSLog("Error: \(description)")
         callState = .idle
     }

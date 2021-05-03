@@ -1,4 +1,4 @@
-package com.shepeliev.webrtckmm.sample.shared
+package com.shepeliev.webrtckmp.sample.shared
 
 import platform.Foundation.NSLog
 
