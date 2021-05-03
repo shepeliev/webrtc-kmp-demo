@@ -1,6 +1,5 @@
 package com.shepeliev.webrtckmp.sample.shared
 
-import com.shepeliev.webrtckmp.sample.shared.Log
 import com.shepeliev.webrtckmp.MediaDevices
 import com.shepeliev.webrtckmp.MediaStream
 import com.shepeliev.webrtckmp.VideoTrack
