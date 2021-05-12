@@ -7,6 +7,6 @@ target 'iosAppSwift' do
 
   # Pods for iosAppSwift
   pod 'shared', :path => '../shared'
-  pod 'GoogleWebRTC'
+  pod 'webrtc-kmp', :git => 'git@github.com:shepeliev/webrtc-kmp.git'
 
 end

@@ -1,23 +1,26 @@
 PODS:
-  - GoogleWebRTC (1.1.31999)
   - shared (1.0.0)
+  - webrtc-kmp (1.89-alpha02)
 
 DEPENDENCIES:
-  - GoogleWebRTC
   - shared (from `../shared`)
-
-SPEC REPOS:
-  trunk:
-    - GoogleWebRTC
+  - "webrtc-kmp (from `git@github.com:shepeliev/webrtc-kmp.git`)"
 
 EXTERNAL SOURCES:
   shared:
     :path: "../shared"
+  webrtc-kmp:
+    :git: "git@github.com:shepeliev/webrtc-kmp.git"
+
+CHECKOUT OPTIONS:
+  webrtc-kmp:
+    :commit: 657520ecd929ac3b4e4be1401e656844c7055931
+    :git: "git@github.com:shepeliev/webrtc-kmp.git"
 
 SPEC CHECKSUMS:
-  GoogleWebRTC: b39a78c4f5cc6b0323415b9233db03a2faa7b0f0
   shared: a9e43544bd019b65076b8b7cfa656b7620a57e54
+  webrtc-kmp: a4348c07a3b96369ed67b622f10f8effdbe07f3b
 
-PODFILE CHECKSUM: 31995010f9071291c3abdacaf8c544fb27073844
+PODFILE CHECKSUM: 5505220dc4924db823972345d4bd2473baa51109
 
 COCOAPODS: 1.10.1

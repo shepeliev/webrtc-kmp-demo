@@ -8,7 +8,6 @@ plugins {
 
 repositories {
     google()
-    jcenter()
     mavenCentral()
     mavenLocal()
 }
@@ -31,14 +30,14 @@ kotlin {
             .filterIsInstance<Framework>()
             .forEach {
                 it.transitiveExport = true
-                it.export("com.shepeliev:webrtc-kmp:1.0-alpha01")
+                it.export("com.shepeliev:webrtc-kmp:1.89-alpha02")
             }
     }
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api("com.shepeliev:webrtc-kmp:1.0-alpha01")
+                api("com.shepeliev:webrtc-kmp:1.89-alpha02")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3-native-mt")
             }
         }
