@@ -13,6 +13,7 @@ repositories {
 }
 
 version = "1.0.0"
+val webRtcKmmVersion = "1.89.0-alpha03"
 
 kotlin {
     cocoapods {
@@ -30,14 +31,14 @@ kotlin {
             .filterIsInstance<Framework>()
             .forEach {
                 it.transitiveExport = true
-                it.export("com.shepeliev:webrtc-kmp:1.89-alpha02")
+                it.export("com.shepeliev:webrtc-kmp:$webRtcKmmVersion")
             }
     }
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api("com.shepeliev:webrtc-kmp:1.89-alpha02")
+                api("com.shepeliev:webrtc-kmp:$webRtcKmmVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3-native-mt")
             }
         }

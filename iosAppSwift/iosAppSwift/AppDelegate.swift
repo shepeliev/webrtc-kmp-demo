@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        webRtcKmm.initialize(fieldTrials: [String : String](), enableInternalTracer: false, loggingSeverity: .none)
+        webRtcKmm.initialize(fieldTrials: [String : String](), enableInternalTracer: false, loggingSeverity: nil)
         return true
     }
     

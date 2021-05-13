@@ -8,7 +8,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.shepeliev.webrtckmp.VideoTrack
-import com.shepeliev.webrtckmp.android.EglBaseProvider
+import com.shepeliev.webrtckmp.WebRtcKmp
+import com.shepeliev.webrtckmp.eglBase
 import com.shepeliev.webrtckmp.sample.shared.LoopbackSample
 import com.shepeliev.webrtckmp.sample.shared.LoopbackSampleListener
 import org.webrtc.SurfaceViewRenderer
@@ -26,13 +27,13 @@ class LoopbackSampleActivity : AppCompatActivity(R.layout.activity_loopback_samp
 
     private val localVideo by lazy {
         findViewById<SurfaceViewRenderer>(R.id.local_video).apply {
-            init(EglBaseProvider.getEglBase().eglBaseContext, null)
+            init(WebRtcKmp.eglBase.eglBaseContext, null)
         }
     }
 
     private val remoteVideo by lazy {
         findViewById<SurfaceViewRenderer>(R.id.remote_video).apply {
-            init(EglBaseProvider.getEglBase().eglBaseContext, null)
+            init(WebRtcKmp.eglBase.eglBaseContext, null)
         }
     }
 

@@ -11,7 +11,8 @@ import com.google.android.material.button.MaterialButton
 import com.shepeliev.webrtckmp.sample.shared.UserMediaSample
 import com.shepeliev.webrtckmp.sample.shared.LocalVideoListener
 import com.shepeliev.webrtckmp.VideoTrack
-import com.shepeliev.webrtckmp.android.EglBaseProvider
+import com.shepeliev.webrtckmp.WebRtcKmp
+import com.shepeliev.webrtckmp.eglBase
 import org.webrtc.SurfaceViewRenderer
 
 class UserMediaSampleActivity : AppCompatActivity(R.layout.activity_user_media_sample),
@@ -30,7 +31,7 @@ class UserMediaSampleActivity : AppCompatActivity(R.layout.activity_user_media_s
 
     private val videoView by lazy {
         findViewById<SurfaceViewRenderer>(R.id.video).apply {
-            init(EglBaseProvider.getEglBase().eglBaseContext, null)
+            init(WebRtcKmp.eglBase.eglBaseContext, null)
         }
     }
 
