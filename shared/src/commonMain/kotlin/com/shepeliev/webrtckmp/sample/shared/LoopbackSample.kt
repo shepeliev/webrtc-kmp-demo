@@ -20,29 +20,21 @@ class LoopbackSample(private val listener: LoopbackSampleListener) :
 
     private val tag = "LoopbackSample"
 
-    private var userMedia: MediaStream? = null
+    private var localStream: MediaStream? = null
     private var localPeerConnection: PeerConnection? = null
     private var remotePeerConnection: PeerConnection? = null
 
     fun startCall() = launch {
         try {
-            val config = RtcConfiguration(
-                disableIpv6 = true,
-                disableIpv6OnWifi = true,
-                sdpSemantics = SdpSemantics.UnifiedPlan,
-            )
-            val loopbackConstraints = mediaConstraints {
-                optional { "DtlsSrtpKeyAgreement" to "false" }
-            }
-
-            localPeerConnection = PeerConnection.create(config, loopbackConstraints)
-            remotePeerConnection = PeerConnection.create(config, loopbackConstraints)
+            val config = RtcConfiguration()
+            localPeerConnection = PeerConnection(config)
+            remotePeerConnection = PeerConnection(config)
 
             val localIceCandidates = mutableListOf<IceCandidate>()
             val remoteIceCandidates = mutableListOf<IceCandidate>()
 
-            with(localPeerConnection!!.events) {
-                onSignalingState
+            with(localPeerConnection!!) {
+                onSignalingStateChange
                     .onEach {
                         Log.d(tag, "Local PC signaling state $it")
                         if (it == SignalingState.Stable) {
@@ -51,10 +43,12 @@ class LoopbackSample(private val listener: LoopbackSampleListener) :
                         }
                     }
                     .launchIn(this@LoopbackSample)
+
                 onIceGatheringState
                     .onEach { Log.d(tag, "Local PC ICE gathering state $it") }
                     .launchIn(this@LoopbackSample)
-                onIceConnectionState
+
+                onIceConnectionStateChange
                     .onEach {
                         Log.d(tag, "Local PC ICE connection state $it")
                         if (it == IceConnectionState.Connected) {
@@ -65,9 +59,11 @@ class LoopbackSample(private val listener: LoopbackSampleListener) :
                         }
                     }
                     .launchIn(this@LoopbackSample)
-                onConnectionState
+
+                onConnectionStateChange
                     .onEach { Log.d(tag, "Local PC PeerConnection state $it") }
                     .launchIn(this@LoopbackSample)
+
                 onIceCandidate
                     .onEach {
                         Log.d(tag, "Local PC ICE candidate $it")
@@ -82,8 +78,8 @@ class LoopbackSample(private val listener: LoopbackSampleListener) :
                     .launchIn(this@LoopbackSample)
             }
 
-            with(remotePeerConnection!!.events) {
-                onSignalingState
+            with(remotePeerConnection!!) {
+                onSignalingStateChange
                     .onEach {
                         Log.d(tag, "Remote PC signaling state $it")
                         if (it == SignalingState.Stable) {
@@ -92,15 +88,19 @@ class LoopbackSample(private val listener: LoopbackSampleListener) :
                         }
                     }
                     .launchIn(this@LoopbackSample)
+
                 onIceGatheringState
                     .onEach { Log.d(tag, "Remote PC ICE gathering state $it") }
                     .launchIn(this@LoopbackSample)
-                onIceConnectionState
+
+                onIceConnectionStateChange
                     .onEach { Log.d(tag, "Remote PC ICE connection state $it") }
                     .launchIn(this@LoopbackSample)
-                onConnectionState
+
+                onConnectionStateChange
                     .onEach { Log.d(tag, "Remote PC PeerConnection state $it") }
                     .launchIn(this@LoopbackSample)
+
                 onIceCandidate
                     .onEach {
                         Log.d(tag, "Remote PC ICE candidate $it")
@@ -113,25 +113,27 @@ class LoopbackSample(private val listener: LoopbackSampleListener) :
                         }
                     }
                     .launchIn(this@LoopbackSample)
-                onAddTrack
-                    .onEach { (receiver, _) ->
-                        Log.d(tag, "Remote PC on add track ${receiver.track}")
-                        if (receiver.track?.kind == MediaStreamTrack.VIDEO_TRACK_KIND) {
-                            val track = (receiver.track as VideoTrack)
+
+                onTrack
+                    .onEach { trackEvent ->
+                        Log.d(tag, "Remote PC on add track ${trackEvent.track}")
+                        if (trackEvent.track?.kind == MediaStreamTrack.VIDEO_TRACK_KIND) {
+                            val track = (trackEvent.track as VideoTrack)
                             listener.onRemoteTrackAvailable(track)
                         }
                     }
                     .launchIn(this@LoopbackSample)
+
             }
 
-            userMedia = MediaDevices.getUserMedia(audio = true, video = true)
-            listener.onLocalTrackAvailable(userMedia!!.videoTrack()!!)
+            localStream = MediaDevices.getUserMedia(audio = true, video = true)
+            listener.onLocalTrackAvailable(localStream!!.videoTracks.first())
 
-            userMedia!!.audioTracks.forEach {
-                localPeerConnection?.addTrack(it, listOf(userMedia!!.id))
+            localStream!!.audioTracks.forEach {
+                localPeerConnection?.addTrack(it, listOf(localStream!!.id))
             }
-            userMedia!!.videoTracks.forEach {
-                localPeerConnection?.addTrack(it, listOf(userMedia!!.id))
+            localStream!!.videoTracks.forEach {
+                localPeerConnection?.addTrack(it, listOf(localStream!!.id))
             }
 
             val offerConstraints = mediaConstraints {
@@ -173,5 +175,7 @@ class LoopbackSample(private val listener: LoopbackSampleListener) :
         remotePeerConnection?.close()
         remotePeerConnection = null
         listener.onCallEnded()
+        localStream?.tracks?.forEach { it.stop() }
+        localStream = null
     }
 }
