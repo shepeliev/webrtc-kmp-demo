@@ -7,7 +7,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.shepeliev.webrtckmp.VideoTrack
+import com.shepeliev.webrtckmp.VideoStreamTrack
 import com.shepeliev.webrtckmp.WebRtcKmp
 import com.shepeliev.webrtckmp.eglBase
 import com.shepeliev.webrtckmp.sample.shared.LoopbackSample
@@ -65,14 +65,14 @@ class LoopbackSampleActivity : AppCompatActivity(R.layout.activity_loopback_samp
         super.onDestroy()
     }
 
-    override fun onLocalTrackAvailable(track: VideoTrack) {
+    override fun onLocalTrackAvailable(track: VideoStreamTrack) {
         localVideo.visibility = View.VISIBLE
-        track.native.addSink(localVideo)
+        track.addSink(localVideo)
     }
 
-    override fun onRemoteTrackAvailable(track: VideoTrack) {
+    override fun onRemoteTrackAvailable(track: VideoStreamTrack) {
         remoteVideo.visibility = View.VISIBLE
-        track.native.addSink(remoteVideo)
+        track.addSink(remoteVideo)
     }
 
     override fun onCallEstablished() {

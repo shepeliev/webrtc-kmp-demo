@@ -55,18 +55,17 @@ class LoopbackViewController: UIViewController, LoopbackSampleListener {
         callState = .idle
     }
     
-    func onLocalTrackAvailable(track: VideoTrack) {
-        addRenderer(track: track.native, renderer: localVideoView)
+    func onLocalTrackAvailable(track: VideoStreamTrack) {
+        addRenderer(track, renderer: localVideoView)
     }
     
-    func onRemoteTrackAvailable(track: VideoTrack) {
-        addRenderer(track: track.native, renderer: remoteVideoView)
+    func onRemoteTrackAvailable(track: VideoStreamTrack) {
+        addRenderer(track, renderer: remoteVideoView)
     }
     
-    private func addRenderer(track: RTCMediaStreamTrack, renderer: RTCMTLVideoView) {
+    private func addRenderer(_ track: VideoStreamTrack, renderer: RTCMTLVideoView) {
         renderer.isHidden = false
-        let rtcVideoTrack = track as! RTCVideoTrack
-        rtcVideoTrack.add(renderer)
+        track.addRenderer(renderer: renderer)
     }
     
     /*

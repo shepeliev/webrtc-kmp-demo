@@ -10,7 +10,7 @@ import androidx.core.app.ActivityCompat
 import com.google.android.material.button.MaterialButton
 import com.shepeliev.webrtckmp.sample.shared.UserMediaSample
 import com.shepeliev.webrtckmp.sample.shared.LocalVideoListener
-import com.shepeliev.webrtckmp.VideoTrack
+import com.shepeliev.webrtckmp.VideoStreamTrack
 import com.shepeliev.webrtckmp.WebRtcKmp
 import com.shepeliev.webrtckmp.eglBase
 import org.webrtc.SurfaceViewRenderer
@@ -73,16 +73,16 @@ class UserMediaSampleActivity : AppCompatActivity(R.layout.activity_user_media_s
         userMedia.startVideo()
     }
 
-    override fun onAddVideoTrack(track: VideoTrack) {
+    override fun onAddVideoTrack(track: VideoStreamTrack) {
         btnSwitchCamera.isEnabled = true
         btnStartCamera.isEnabled = false
-        track.native.addSink(videoView)
+        track.addSink(videoView)
     }
 
-    override fun onRemoveVideoTrack(track: VideoTrack) {
+    override fun onRemoveVideoTrack(track: VideoStreamTrack) {
         btnSwitchCamera.isEnabled = false
         btnStartCamera.isEnabled = true
-        track.native.removeSink(videoView)
+        track.removeSink(videoView)
     }
 
     override fun onError(description: String?) {

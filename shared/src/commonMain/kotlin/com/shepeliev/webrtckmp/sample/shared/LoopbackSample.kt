@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 interface LoopbackSampleListener {
-    fun onLocalTrackAvailable(track: VideoTrack)
-    fun onRemoteTrackAvailable(track: VideoTrack)
+    fun onLocalTrackAvailable(track: VideoStreamTrack)
+    fun onRemoteTrackAvailable(track: VideoStreamTrack)
     fun onCallEstablished()
     fun onCallEnded()
     fun onError(description: String)
@@ -117,8 +117,8 @@ class LoopbackSample(private val listener: LoopbackSampleListener) :
                 onTrack
                     .onEach { trackEvent ->
                         Log.d(tag, "Remote PC on add track ${trackEvent.track}")
-                        if (trackEvent.track?.kind == MediaStreamTrack.VIDEO_TRACK_KIND) {
-                            val track = (trackEvent.track as VideoTrack)
+                        if (trackEvent.track?.kind == MediaStreamTrackKind.Video) {
+                            val track = (trackEvent.track as VideoStreamTrack)
                             listener.onRemoteTrackAvailable(track)
                         }
                     }

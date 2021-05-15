@@ -2,15 +2,15 @@ package com.shepeliev.webrtckmp.sample.shared
 
 import com.shepeliev.webrtckmp.MediaDevices
 import com.shepeliev.webrtckmp.MediaStream
-import com.shepeliev.webrtckmp.MediaStreamTrack
-import com.shepeliev.webrtckmp.VideoTrack
+import com.shepeliev.webrtckmp.MediaStreamTrackKind
+import com.shepeliev.webrtckmp.VideoStreamTrack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 interface LocalVideoListener {
-    fun onAddVideoTrack(track: VideoTrack)
-    fun onRemoveVideoTrack(track: VideoTrack)
+    fun onAddVideoTrack(track: VideoStreamTrack)
+    fun onRemoveVideoTrack(track: VideoStreamTrack)
     fun onError(description: String?)
 }
 
@@ -49,8 +49,8 @@ class UserMediaSample(private val listener: LocalVideoListener) : CoroutineScope
     fun stopVideo() {
         val stream = mediaStream ?: return
         stream.tracks.forEach { track ->
-            if (track.kind == MediaStreamTrack.VIDEO_TRACK_KIND) {
-                listener.onRemoveVideoTrack(track as VideoTrack)
+            if (track.kind == MediaStreamTrackKind.Video) {
+                listener.onRemoveVideoTrack(track as VideoStreamTrack)
             }
             track.stop()
         }

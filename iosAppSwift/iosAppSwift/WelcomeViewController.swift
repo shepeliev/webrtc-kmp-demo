@@ -44,12 +44,12 @@ class WelcomeViewController: UIViewController, LocalVideoListener {
         NSLog("Local video error: \(String(describing: description))")
     }
 
-    func onAddVideoTrack(track: VideoTrack) {
-        (track.native as RTCVideoTrack).add(videoView)
+    func onAddVideoTrack(track: VideoStreamTrack) {
+        track.addRenderer(renderer: videoView)
     }
     
-    func onRemoveVideoTrack(track: VideoTrack) {
-        (track.native as RTCVideoTrack).remove(videoView)
+    func onRemoveVideoTrack(track: VideoStreamTrack) {
+        track.removeRenderer(renderer: videoView)
     }
 }
 
