@@ -13,7 +13,7 @@ repositories {
 }
 
 version = "1.0.0"
-val webRtcKmmVersion = "1.89-alpha03"
+val webRtcKmmVersion = "0.89"
 
 kotlin {
     cocoapods {
