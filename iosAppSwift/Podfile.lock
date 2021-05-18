@@ -1,6 +1,6 @@
 PODS:
   - shared (1.0.0)
-  - webrtc-kmp (1.89-alpha02)
+  - webrtc-kmp (0.89)
 
 DEPENDENCIES:
   - shared (from `../shared`)
@@ -14,12 +14,12 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   webrtc-kmp:
-    :commit: 657520ecd929ac3b4e4be1401e656844c7055931
+    :commit: 26b247e55b85b321007221ff9529f67c6c32257c
     :git: "git@github.com:shepeliev/webrtc-kmp.git"
 
 SPEC CHECKSUMS:
   shared: a9e43544bd019b65076b8b7cfa656b7620a57e54
-  webrtc-kmp: a4348c07a3b96369ed67b622f10f8effdbe07f3b
+  webrtc-kmp: dbd8594fa25f8514b07d7520bc342d259c61b015
 
 PODFILE CHECKSUM: 345cfb9917b26068e749b76fdd963615605377e6
 
