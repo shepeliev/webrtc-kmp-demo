@@ -6,6 +6,7 @@ import com.shepeliev.webrtckmp.MediaStreamTrackKind
 import com.shepeliev.webrtckmp.VideoStreamTrack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 interface LocalVideoListener {
@@ -14,15 +15,20 @@ interface LocalVideoListener {
     fun onError(description: String?)
 }
 
-class UserMediaSample(private val listener: LocalVideoListener) : CoroutineScope by MainScope() {
+class UserMediaSample(private val listener: LocalVideoListener) {
 
     private val tag = "UserMediaSample"
     private var mediaStream: MediaStream? = null
+    private var scope: CoroutineScope? = null
 
     fun startVideo() {
         stopVideo()
 
-        launch {
+        if (scope == null) {
+            scope = MainScope()
+        }
+
+        scope?.launch {
             try {
                 MediaDevices.getUserMedia(audio = false, video = true)
             } catch (e: Throwable) {
@@ -31,15 +37,16 @@ class UserMediaSample(private val listener: LocalVideoListener) : CoroutineScope
                 null
             }?.also { stream ->
                 mediaStream = stream
-                listener.onAddVideoTrack(mediaStream!!.videoTracks.first())
+                listener.onAddVideoTrack(stream.videoTracks.first())
             }
         }
     }
 
     fun switchCamera() {
-        launch {
+        scope?.launch {
             try {
-                MediaDevices.switchCamera()
+                val info = MediaDevices.switchCamera()
+                Log.d(tag, "Switched to $info")
             } catch (e: Throwable) {
                 listener.onError(e.message)
             }
@@ -55,5 +62,7 @@ class UserMediaSample(private val listener: LocalVideoListener) : CoroutineScope
             track.stop()
         }
         mediaStream = null
+        scope?.cancel()
+        scope = null
     }
 }
