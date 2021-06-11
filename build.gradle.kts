@@ -1,7 +1,7 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 buildscript {
-    val kotlinVersion by extra("1.4.32")
+    val kotlinVersion by extra("1.5.10")
     val navVersion by extra("2.3.3")
 
     repositories {
