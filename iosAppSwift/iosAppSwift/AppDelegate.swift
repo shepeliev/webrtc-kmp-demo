@@ -10,22 +10,15 @@ import shared
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    
-    let webRtcKmm = WebRtcKmp()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        webRtcKmm.initialize(
-            peerConnectionFactoryOptions: nil,
-            fieldTrials: [String : String](),
-            enableInternalTracer: false,
-            loggingSeverity: nil
-        )
+        WebRtcKmpKt.initializeWebRtcKmp(build: {(builder: WebRtcKmpBuilder) -> Void in })
         return true
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        webRtcKmm.dispose()
+        
     }
 
     // MARK: UISceneSession Lifecycle

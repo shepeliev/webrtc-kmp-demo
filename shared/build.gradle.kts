@@ -13,7 +13,7 @@ repositories {
 }
 
 version = "1.0.0"
-val webRtcKmmVersion = "0.89.1"
+val webRtcKmmVersion = "0.89.2-SNAPSHOT"
 
 kotlin {
     cocoapods {
@@ -39,7 +39,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api("com.shepeliev:webrtc-kmp:$webRtcKmmVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3-native-mt")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0-native-mt")
             }
         }
         val commonTest by getting

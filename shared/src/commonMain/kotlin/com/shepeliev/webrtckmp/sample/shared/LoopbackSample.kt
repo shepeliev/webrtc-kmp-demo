@@ -78,7 +78,10 @@ class LoopbackSample(private val listener: LoopbackSampleListener) {
                                 Log.d(tag, "Remote PC is in Stable state. Add Ice candidate")
                                 remotePeerConnection?.addIceCandidate(it)
                             } else {
-                                Log.d(tag, "Remote PC is not in Stable state. Collect local candidate")
+                                Log.d(
+                                    tag,
+                                    "Remote PC is not in Stable state. Collect local candidate"
+                                )
                                 localIceCandidates += it
                             }
                         }
@@ -133,26 +136,21 @@ class LoopbackSample(private val listener: LoopbackSampleListener) {
 
                 }
 
-                localStream = MediaDevices.getUserMedia(audio = true, video = true)
+                localStream = WebRtcKmp.mediaDevices.getUserMedia {
+                    audio()
+                    video()
+                }
                 listener.onLocalTrackAvailable(localStream!!.videoTracks.first())
 
-                localStream!!.audioTracks.forEach {
-                    localPeerConnection?.addTrack(it, listOf(localStream!!.id))
-                }
-                localStream!!.videoTracks.forEach {
-                    localPeerConnection?.addTrack(it, listOf(localStream!!.id))
-                }
+                localStream!!.audioTracks.forEach { localPeerConnection?.addTrack(it) }
+                localStream!!.videoTracks.forEach { localPeerConnection?.addTrack(it) }
 
-                val offerConstraints = mediaConstraints {
-                    mandatory { "OfferToReceiveAudio" to "true" }
-                    mandatory { "OfferToReceiveVideo" to "true" }
-                }
-                val offer = localPeerConnection?.createOffer(offerConstraints)
+                val offer = localPeerConnection?.createOffer(OfferAnswerOptions())
                 Log.d(tag, "$offer")
                 localPeerConnection?.setLocalDescription(offer!!)
 
                 remotePeerConnection?.setRemoteDescription(offer!!)
-                val answer = remotePeerConnection?.createAnswer(mediaConstraints())
+                val answer = remotePeerConnection?.createAnswer(OfferAnswerOptions())
                 remotePeerConnection?.setLocalDescription(answer!!)
 
                 localPeerConnection?.setRemoteDescription(answer!!)
