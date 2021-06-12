@@ -13,7 +13,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        WebRtcKmpKt.initializeWebRtcKmp(build: {(builder: WebRtcKmpBuilder) -> Void in })
+//        WebRtcKmpKt.initializeWebRtcKmp(build: {(builder: WebRtcKmpBuilder) -> Void in })
+        WebRtcKt.initializeWebRtc() { $0 }
         return true
     }
     

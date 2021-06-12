@@ -8,8 +8,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.shepeliev.webrtckmp.VideoStreamTrack
-import com.shepeliev.webrtckmp.WebRtcKmp
-import com.shepeliev.webrtckmp.eglBase
 import com.shepeliev.webrtckmp.eglBaseContext
 import com.shepeliev.webrtckmp.sample.shared.LoopbackSample
 import com.shepeliev.webrtckmp.sample.shared.LoopbackSampleListener

@@ -136,7 +136,7 @@ class LoopbackSample(private val listener: LoopbackSampleListener) {
 
                 }
 
-                localStream = WebRtcKmp.mediaDevices.getUserMedia {
+                localStream = WebRtc.mediaDevices.getUserMedia {
                     audio()
                     video()
                 }
