@@ -1,9 +1,9 @@
 package com.shepeliev.webrtckmp.sample.shared
 
-import com.shepeliev.webrtckmp.MediaDevices
 import com.shepeliev.webrtckmp.MediaStream
 import com.shepeliev.webrtckmp.MediaStreamTrackKind
 import com.shepeliev.webrtckmp.VideoStreamTrack
+import com.shepeliev.webrtckmp.WebRtc
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -30,7 +30,7 @@ class UserMediaSample(private val listener: LocalVideoListener) {
 
         scope?.launch {
             try {
-                MediaDevices.getUserMedia(audio = false, video = true)
+                WebRtc.mediaDevices.getUserMedia { video() }
             } catch (e: Throwable) {
                 Log.e(tag, "Error", e)
                 listener.onError(e.message)
@@ -45,8 +45,8 @@ class UserMediaSample(private val listener: LocalVideoListener) {
     fun switchCamera() {
         scope?.launch {
             try {
-                val info = MediaDevices.switchCamera()
-                Log.d(tag, "Switched to $info")
+                mediaStream?.videoTracks?.forEach { it.switchCamera() }
+                Log.d(tag, "Camera switched")
             } catch (e: Throwable) {
                 listener.onError(e.message)
             }
@@ -59,8 +59,8 @@ class UserMediaSample(private val listener: LocalVideoListener) {
             if (track.kind == MediaStreamTrackKind.Video) {
                 listener.onRemoveVideoTrack(track as VideoStreamTrack)
             }
-            track.stop()
         }
+        mediaStream?.release()
         mediaStream = null
         scope?.cancel()
         scope = null
