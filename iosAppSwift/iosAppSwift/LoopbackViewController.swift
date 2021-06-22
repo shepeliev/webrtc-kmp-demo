@@ -9,12 +9,12 @@ import UIKit
 import WebRTC
 import shared
 
-class LoopbackViewController: UIViewController, LoopbackSampleListener {
+class LoopbackViewController: UIViewController {
 
     @IBOutlet weak var localVideoView: RTCMTLVideoView!
     @IBOutlet weak var remoteVideoView: RTCMTLVideoView!
     
-    private var loopbackSample: LoopbackSample?
+    private let loopbackSample = LoopbackSample()
     
     private var callState: CallState = .idle
     
@@ -22,21 +22,42 @@ class LoopbackViewController: UIViewController, LoopbackSampleListener {
         super.viewDidLoad()
         localVideoView.isHidden = true
         remoteVideoView.isHidden = true
-        loopbackSample =  LoopbackSample(listener: self)
+        
+        loopbackSample.onLocalStream = { stream in
+            guard let track = stream.videoTracks.first else {
+                return
+            }
+            self.onLocalTrackAvailable(track: track)
+        }
+        
+        loopbackSample.onRemoteStream = { stream in
+            guard let track = stream.videoTracks.first else {
+                return
+            }
+            self.onRemoteTrackAvailable(track: track)
+            self.onCallEstablished()
+        }
+        
+        loopbackSample.onRemoteVideoTrack = { track in
+            self.onRemoteTrackAvailable(track: track)
+            self.onCallEstablished()
+        }
     }
     
     @IBAction func callHangupPressed(_ sender: UIButton) {
         if callState == .idle {
-            loopbackSample?.startCall()
+            loopbackSample.startCall()
             callState = .calling
         }
         if callState == .inCall {
-            loopbackSample?.stopCall()
+            loopbackSample.stopCall()
+            onCallEnded()
         }
     }
     
     @IBAction func backPressed(_ sender: UIButton) {
-        loopbackSample?.stopCall()
+        loopbackSample.stopCall()
+        onCallEnded()
         dismiss(animated: true, completion: nil)
     }
     
@@ -79,7 +100,6 @@ class LoopbackViewController: UIViewController, LoopbackSampleListener {
     */
 
 }
-
 
 enum CallState {
     case idle

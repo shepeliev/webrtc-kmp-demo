@@ -35,6 +35,11 @@ kotlin {
             }
     }
 
+    js {
+        useCommonJs()
+        browser()
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -47,6 +52,11 @@ kotlin {
         val androidTest by getting
         val iosMain by getting
         val iosTest by getting
+        val jsMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-js"))
+            }
+        }
     }
 }
 

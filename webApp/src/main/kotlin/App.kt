@@ -1,19 +1,43 @@
+import com.shepeliev.webrtckmp.WebRtc
+import com.shepeliev.webrtckmp.sample.shared.LoopbackSample
 import kotlinx.browser.document
-import kotlinx.browser.window
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLVideoElement
-import org.w3c.dom.mediacapture.MediaStreamConstraints
 
 fun main() {
-    document.querySelector("#showVideo")?.addEventListener("click", callback = {
-        // TODO implement getting user media by shared KMM lib
-        val constraints = MediaStreamConstraints(video = true)
-        window.navigator.getUserMedia(
-            constraints, successCallback = {
-                val video = document.querySelector("#gum-local") as? HTMLVideoElement
-                video?.srcObject = it
-            },
-            errorCallback = {
-                console.error(it)
-            })
+    val scope = MainScope()
+    val localVideo = document.querySelector("#localVideo") as? HTMLVideoElement
+    val remoteVideo = document.querySelector("#remoteVideo") as? HTMLVideoElement
+    val startCallButton = document.querySelector("#startCall") as? HTMLButtonElement
+    val stopCallButton = document.querySelector("#stopCall") as? HTMLButtonElement
+    val showVideoButton = document.querySelector("#showVideo") as? HTMLButtonElement
+
+    showVideoButton?.addEventListener("click", callback = {
+        scope.launch {
+            val stream = WebRtc.mediaDevices.getUserMedia(audio = true, video = true)
+            localVideo?.srcObject = stream.js
+        }
+    })
+
+    val loopbackSample = LoopbackSample()
+
+    loopbackSample.onLocalStream = { stream ->
+        localVideo?.srcObject = stream.js
+    }
+    loopbackSample.onRemoteStream = { stream ->
+        remoteVideo?.srcObject = stream.js
+    }
+
+    startCallButton?.addEventListener("click", callback = {
+        loopbackSample.startCall()
+        startCallButton.disabled = true
+        stopCallButton?.disabled = false
+    })
+    stopCallButton?.addEventListener("click", callback = {
+        loopbackSample.stopCall()
+        startCallButton?.disabled = false
+        stopCallButton.disabled = true
     })
 }
