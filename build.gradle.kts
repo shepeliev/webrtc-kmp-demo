@@ -4,7 +4,6 @@ buildscript {
 
     repositories {
         gradlePluginPortal()
-        jcenter()
         google()
         mavenCentral()
     }
@@ -18,16 +17,7 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
         mavenCentral()
         mavenLocal()
     }
 }
-
-//subprojects {
-//    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
-//        kotlinOptions {
-//            jvmTarget = "1.8"
-//        }
-//    }
-//}
