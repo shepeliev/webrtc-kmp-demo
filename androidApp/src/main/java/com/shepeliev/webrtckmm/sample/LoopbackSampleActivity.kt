@@ -3,19 +3,15 @@ package com.shepeliev.webrtckmm.sample
 import android.Manifest
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.shepeliev.webrtckmp.VideoStreamTrack
-import com.shepeliev.webrtckmp.WebRtcKmp
-import com.shepeliev.webrtckmp.eglBase
+import com.shepeliev.webrtckmp.eglBaseContext
 import com.shepeliev.webrtckmp.sample.shared.LoopbackSample
-import com.shepeliev.webrtckmp.sample.shared.LoopbackSampleListener
 import org.webrtc.SurfaceViewRenderer
 
-class LoopbackSampleActivity : AppCompatActivity(R.layout.activity_loopback_sample),
-    LoopbackSampleListener {
+class LoopbackSampleActivity : AppCompatActivity(R.layout.activity_loopback_sample) {
 
     private val requestPermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
@@ -24,20 +20,21 @@ class LoopbackSampleActivity : AppCompatActivity(R.layout.activity_loopback_samp
 
     private val btnCall by lazy { findViewById<FloatingActionButton>(R.id.btn_call) }
     private val btnHangup by lazy { findViewById<FloatingActionButton>(R.id.btn_hangup) }
+    private val localVideo by lazy { findViewById<SurfaceViewRenderer>(R.id.local_video) }
+    private val remoteVideo by lazy { findViewById<SurfaceViewRenderer>(R.id.remote_video) }
 
-    private val localVideo by lazy {
-        findViewById<SurfaceViewRenderer>(R.id.local_video).apply {
-            init(WebRtcKmp.eglBase.eglBaseContext, null)
+    private val loopbackSample by lazy {
+        LoopbackSample().apply {
+            onLocalStream = { stream ->
+                val videoTrack = stream.videoTracks.firstOrNull()
+                videoTrack?.also { onLocalTrackAvailable(it) }
+            }
+
+            onRemoteVideoTrack = { onRemoteTrackAvailable(it) }
+            onCallEstablished = { this@LoopbackSampleActivity.onCallEstablished() }
+            onCallEnded = { this@LoopbackSampleActivity.onCallEnded() }
         }
     }
-
-    private val remoteVideo by lazy {
-        findViewById<SurfaceViewRenderer>(R.id.remote_video).apply {
-            init(WebRtcKmp.eglBase.eglBaseContext, null)
-        }
-    }
-
-    private val loopbackSample by lazy { LoopbackSample(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +48,7 @@ class LoopbackSampleActivity : AppCompatActivity(R.layout.activity_loopback_samp
             loopbackSample.stopCall()
             btnHangup.visibility = View.GONE
             btnCall.visibility = View.VISIBLE
+            onCallEnded()
         }
     }
 
@@ -65,29 +63,35 @@ class LoopbackSampleActivity : AppCompatActivity(R.layout.activity_loopback_samp
         super.onDestroy()
     }
 
-    override fun onLocalTrackAvailable(track: VideoStreamTrack) {
-        localVideo.visibility = View.VISIBLE
-        track.addSink(localVideo)
+    private fun onLocalTrackAvailable(track: VideoStreamTrack) {
+        with(localVideo) {
+            init(eglBaseContext, null)
+            track.addSink(this)
+            visibility = View.VISIBLE
+        }
     }
 
-    override fun onRemoteTrackAvailable(track: VideoStreamTrack) {
-        remoteVideo.visibility = View.VISIBLE
-        track.addSink(remoteVideo)
+    private fun onRemoteTrackAvailable(track: VideoStreamTrack) {
+        with(remoteVideo) {
+            init(eglBaseContext, null)
+            track.addSink(this)
+            visibility = View.VISIBLE
+        }
     }
 
-    override fun onCallEstablished() {
+    private fun onCallEstablished() {
         btnHangup.visibility = View.VISIBLE
     }
 
-    override fun onError(description: String) {
-        Toast.makeText(this, "Error: $description", Toast.LENGTH_LONG).show()
-        btnHangup.visibility = View.GONE
-        btnCall.visibility = View.VISIBLE
-    }
-
-    override fun onCallEnded() {
-        localVideo.visibility = View.GONE
-        remoteVideo.visibility = View.GONE
+    private fun onCallEnded() {
+        with(localVideo) {
+            visibility = View.GONE
+            release()
+        }
+        with(remoteVideo) {
+            visibility = View.GONE
+            release()
+        }
     }
 
     companion object {

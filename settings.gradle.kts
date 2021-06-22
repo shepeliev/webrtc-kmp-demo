@@ -10,5 +10,5 @@ pluginManagement {
 rootProject.name = "WebRtcKmpDemo"
 enableFeaturePreview("GRADLE_METADATA")
 
-include(":shared", ":androidApp")
+include(":shared", ":androidApp", ":webApp")
 

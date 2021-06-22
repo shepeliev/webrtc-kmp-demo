@@ -8,15 +8,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-interface LoopbackSampleListener {
-    fun onLocalTrackAvailable(track: VideoStreamTrack)
-    fun onRemoteTrackAvailable(track: VideoStreamTrack)
-    fun onCallEstablished()
-    fun onCallEnded()
-    fun onError(description: String)
-}
-
-class LoopbackSample(private val listener: LoopbackSampleListener) {
+class LoopbackSample() {
 
     private val tag = "LoopbackSample"
 
@@ -25,6 +17,12 @@ class LoopbackSample(private val listener: LoopbackSampleListener) {
     private var remotePeerConnection: PeerConnection? = null
 
     private var scope: CoroutineScope? = null
+
+    var onLocalStream: (MediaStream) -> Unit = {}
+    var onRemoteStream: (MediaStream) -> Unit = {}
+    var onRemoteVideoTrack: (VideoStreamTrack) -> Unit = {}
+    var onCallEstablished: () -> Unit = {}
+    var onCallEnded: () -> Unit = {}
 
     fun startCall() {
         if (scope == null) {
@@ -59,7 +57,7 @@ class LoopbackSample(private val listener: LoopbackSampleListener) {
                         .onEach {
                             Log.d(tag, "Local PC ICE connection state $it")
                             if (it == IceConnectionState.Connected) {
-                                listener.onCallEstablished()
+                                onCallEstablished()
                             }
                             if (it == IceConnectionState.Disconnected) {
                                 stopCall()
@@ -78,7 +76,10 @@ class LoopbackSample(private val listener: LoopbackSampleListener) {
                                 Log.d(tag, "Remote PC is in Stable state. Add Ice candidate")
                                 remotePeerConnection?.addIceCandidate(it)
                             } else {
-                                Log.d(tag, "Remote PC is not in Stable state. Collect local candidate")
+                                Log.d(
+                                    tag,
+                                    "Remote PC is not in Stable state. Collect local candidate"
+                                )
                                 localIceCandidates += it
                             }
                         }
@@ -123,42 +124,36 @@ class LoopbackSample(private val listener: LoopbackSampleListener) {
 
                     onTrack
                         .onEach { trackEvent ->
-                            Log.d(tag, "Remote PC on add track ${trackEvent.track}")
-                            if (trackEvent.track?.kind == MediaStreamTrackKind.Video) {
-                                val track = (trackEvent.track as VideoStreamTrack)
-                                listener.onRemoteTrackAvailable(track)
-                            }
+                            Log.d(
+                                tag,
+                                "Remote PC on add track ${trackEvent.track}, streams: ${trackEvent.streams}"
+                            )
+                            trackEvent.streams.firstOrNull()?.also { onRemoteStream(it) }
+                                ?: trackEvent.track?.takeIf { it.kind == MediaStreamTrackKind.Video }
+                                    ?.also { onRemoteVideoTrack(it as VideoStreamTrack) }
                         }
                         .launchIn(this@launch)
 
                 }
 
-                localStream = MediaDevices.getUserMedia(audio = true, video = true)
-                listener.onLocalTrackAvailable(localStream!!.videoTracks.first())
+                localStream = WebRtc.mediaDevices.getUserMedia(audio = true, video = true)
+                onLocalStream(localStream!!)
 
-                localStream!!.audioTracks.forEach {
-                    localPeerConnection?.addTrack(it, listOf(localStream!!.id))
-                }
-                localStream!!.videoTracks.forEach {
-                    localPeerConnection?.addTrack(it, listOf(localStream!!.id))
+                localStream!!.tracks.forEach {
+                    localPeerConnection?.addTrack(it, localStream!!)
                 }
 
-                val offerConstraints = mediaConstraints {
-                    mandatory { "OfferToReceiveAudio" to "true" }
-                    mandatory { "OfferToReceiveVideo" to "true" }
-                }
-                val offer = localPeerConnection?.createOffer(offerConstraints)
+                val offer = localPeerConnection?.createOffer(OfferAnswerOptions())
                 Log.d(tag, "$offer")
                 localPeerConnection?.setLocalDescription(offer!!)
 
                 remotePeerConnection?.setRemoteDescription(offer!!)
-                val answer = remotePeerConnection?.createAnswer(mediaConstraints())
+                val answer = remotePeerConnection?.createAnswer(OfferAnswerOptions())
                 remotePeerConnection?.setLocalDescription(answer!!)
 
                 localPeerConnection?.setRemoteDescription(answer!!)
             } catch (e: Throwable) {
                 Log.e(tag, "Error", e)
-                listener.onError("${e.message}")
                 stopCall()
                 return@launch
             }
@@ -179,14 +174,14 @@ class LoopbackSample(private val listener: LoopbackSampleListener) {
     }
 
     fun stopCall() {
+        localStream?.release()
         localPeerConnection?.close()
         localPeerConnection = null
         remotePeerConnection?.close()
         remotePeerConnection = null
-        listener.onCallEnded()
-        localStream?.tracks?.forEach { it.stop() }
         localStream = null
         scope?.cancel()
         scope = null
+        onCallEnded()
     }
 }

@@ -4,9 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.android.material.button.MaterialButton
-import com.shepeliev.webrtckmp.WebRtcKmp
-import com.shepeliev.webrtckmp.initialize
-import org.webrtc.EglBase
+import com.shepeliev.webrtckmp.initializeWebRtc
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
@@ -16,7 +14,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        WebRtcKmp.initialize(this, EglBase.create())
+        initializeWebRtc(this)
 
         btnUserMedia.setOnClickListener {
             val intent = Intent(this, UserMediaSampleActivity::class.java)

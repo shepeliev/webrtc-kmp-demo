@@ -7,16 +7,15 @@ import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
-import com.shepeliev.webrtckmp.sample.shared.UserMediaSample
-import com.shepeliev.webrtckmp.sample.shared.LocalVideoListener
+import com.shepeliev.webrtckmp.MediaStream
 import com.shepeliev.webrtckmp.VideoStreamTrack
-import com.shepeliev.webrtckmp.WebRtcKmp
-import com.shepeliev.webrtckmp.eglBase
+import com.shepeliev.webrtckmp.WebRtc
+import com.shepeliev.webrtckmp.eglBaseContext
 import org.webrtc.SurfaceViewRenderer
 
-class UserMediaSampleActivity : AppCompatActivity(R.layout.activity_user_media_sample),
-    LocalVideoListener {
+class UserMediaSampleActivity : AppCompatActivity(R.layout.activity_user_media_sample) {
 
     private val tag = "UserMediaSampleActivity"
 
@@ -29,13 +28,9 @@ class UserMediaSampleActivity : AppCompatActivity(R.layout.activity_user_media_s
     private val btnSwitchCamera by lazy { findViewById<MaterialButton>(R.id.btn_switch_camera) }
     private val btnStopVideo by lazy { findViewById<MaterialButton>(R.id.btn_stop_video) }
 
-    private val videoView by lazy {
-        findViewById<SurfaceViewRenderer>(R.id.video).apply {
-            init(WebRtcKmp.eglBase.eglBaseContext, null)
-        }
-    }
+    private val videoView by lazy { findViewById<SurfaceViewRenderer>(R.id.video) }
 
-    private val userMedia by lazy { UserMediaSample(this) }
+    private var localMediaStream: MediaStream? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,18 +40,32 @@ class UserMediaSampleActivity : AppCompatActivity(R.layout.activity_user_media_s
         }
 
         btnSwitchCamera.isEnabled = false
-        btnSwitchCamera.setOnClickListener { userMedia.switchCamera() }
+        btnSwitchCamera.setOnClickListener {
+            localMediaStream?.videoTracks?.forEach { it.switchCameraAsync() }
+        }
 
         btnStopVideo.setOnClickListener {
             btnSwitchCamera.isEnabled = false
-            userMedia.stopVideo()
+            stopVideo()
         }
     }
 
+    private fun VideoStreamTrack.switchCameraAsync() = lifecycleScope.launchWhenResumed {
+        switchCamera()
+    }
+
     override fun onDestroy() {
-        userMedia.stopVideo()
+        stopVideo()
         videoView.release()
         super.onDestroy()
+    }
+
+    private fun stopVideo() {
+        videoView.release()
+        localMediaStream?.release()
+        localMediaStream = null
+        btnSwitchCamera.isEnabled = false
+        btnStartCamera.isEnabled = true
     }
 
     private fun startVideo() {
@@ -69,23 +78,23 @@ class UserMediaSampleActivity : AppCompatActivity(R.layout.activity_user_media_s
             return
         }
 
-        btnSwitchCamera.isEnabled = false
-        userMedia.startVideo()
+        startVideoAsync()
     }
 
-    override fun onAddVideoTrack(track: VideoStreamTrack) {
-        btnSwitchCamera.isEnabled = true
-        btnStartCamera.isEnabled = false
-        track.addSink(videoView)
-    }
-
-    override fun onRemoveVideoTrack(track: VideoStreamTrack) {
-        btnSwitchCamera.isEnabled = false
-        btnStartCamera.isEnabled = true
-        track.removeSink(videoView)
-    }
-
-    override fun onError(description: String?) {
-        Log.e(tag, "Local video error: $description")
+    private fun startVideoAsync() = lifecycleScope.launchWhenStarted {
+        try {
+            localMediaStream = WebRtc.mediaDevices.getUserMedia(video = true)
+            btnSwitchCamera.isEnabled = true
+            btnStartCamera.isEnabled = false
+            localMediaStream
+                ?.videoTracks
+                ?.firstOrNull()
+                ?.also {
+                    videoView?.init(eglBaseContext, null)
+                    it.addSink(videoView)
+                }
+        } catch (e: Throwable) {
+            Log.e(tag, "Local video error", e)
+        }
     }
 }
