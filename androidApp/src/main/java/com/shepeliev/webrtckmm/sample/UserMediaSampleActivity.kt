@@ -9,9 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
+import com.shepeliev.webrtckmp.MediaDevices
 import com.shepeliev.webrtckmp.MediaStream
 import com.shepeliev.webrtckmp.VideoStreamTrack
-import com.shepeliev.webrtckmp.WebRtc
 import com.shepeliev.webrtckmp.eglBaseContext
 import org.webrtc.SurfaceViewRenderer
 
@@ -83,7 +83,7 @@ class UserMediaSampleActivity : AppCompatActivity(R.layout.activity_user_media_s
 
     private fun startVideoAsync() = lifecycleScope.launchWhenStarted {
         try {
-            localMediaStream = WebRtc.mediaDevices.getUserMedia(video = true)
+            localMediaStream = MediaDevices.getUserMedia(video = true)
             btnSwitchCamera.isEnabled = true
             btnStartCamera.isEnabled = false
             localMediaStream

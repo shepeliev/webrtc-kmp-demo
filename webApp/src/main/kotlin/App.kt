@@ -1,4 +1,4 @@
-import com.shepeliev.webrtckmp.WebRtc
+import com.shepeliev.webrtckmp.MediaDevices
 import com.shepeliev.webrtckmp.sample.shared.LoopbackSample
 import kotlinx.browser.document
 import kotlinx.coroutines.MainScope
@@ -16,7 +16,7 @@ fun main() {
 
     showVideoButton?.addEventListener("click", callback = {
         scope.launch {
-            val stream = WebRtc.mediaDevices.getUserMedia(audio = true, video = true)
+            val stream = MediaDevices.getUserMedia(audio = true, video = true)
             localVideo?.srcObject = stream.js
         }
     })

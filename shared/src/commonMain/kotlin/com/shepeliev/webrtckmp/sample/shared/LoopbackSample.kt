@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-class LoopbackSample() {
+class LoopbackSample {
 
     private val tag = "LoopbackSample"
 
@@ -136,7 +136,7 @@ class LoopbackSample() {
 
                 }
 
-                localStream = WebRtc.mediaDevices.getUserMedia(audio = true, video = true)
+                localStream = MediaDevices.getUserMedia(audio = true, video = true)
                 onLocalStream(localStream!!)
 
                 localStream!!.tracks.forEach {

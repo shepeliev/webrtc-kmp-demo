@@ -18,9 +18,9 @@ CHECKOUT OPTIONS:
     :git: "git@github.com:shepeliev/webrtc-kmp.git"
 
 SPEC CHECKSUMS:
-  shared: a9e43544bd019b65076b8b7cfa656b7620a57e54
+  shared: ae234c262769ef31f4f22fc3bff43dcfbb6ae475
   webrtc-kmp: dbd8594fa25f8514b07d7520bc342d259c61b015
 
 PODFILE CHECKSUM: 345cfb9917b26068e749b76fdd963615605377e6
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.10.2

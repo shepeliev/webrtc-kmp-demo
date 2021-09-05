@@ -12,12 +12,12 @@ import WebRTC
 class WelcomeViewController: UIViewController {
 
     @IBOutlet weak var videoView: RTCMTLVideoView!
-    private let webRtc = WebRtc()
+    private let mediaDevices = MediaDevicesCompanion()
     private var stream: MediaStream?
     
     @IBAction func startVideoPressed(_ sender: UIButton) {
         NSLog("Trying to start video...")
-        webRtc.mediaDevices.getUserMedia(
+        mediaDevices.getUserMedia(
             audio: false,
             video: true,
             completionHandler: { stream, error in
